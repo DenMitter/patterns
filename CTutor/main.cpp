@@ -1,83 +1,83 @@
 ﻿#include <iostream>
 #include <string>
+#include <Windows.h>
 
-
-class Weapon {
+class ProductFactory {
 public:
-    virtual ~Weapon() {}
-    virtual std::string Operation() const = 0;
+    virtual ~ProductFactory() {}
+    virtual void createClothing(std::string type) = 0;
+    virtual void createElectronics(std::string type) = 0;
 };
 
-class Sword : public Weapon {
+class ClothingFactory : public ProductFactory {
 public:
-    std::string Operation() const override {
-        return "{Result of the ConcreteSword}";
+    void createClothing(std::string type) override {
+        if (type == "футболка") {
+            std::cout << "Створено футболку\n";
+        }
+        else if (type == "штани") {
+            std::cout << "Створено штани\n";
+        }
+        else if (type == "куртка") {
+            std::cout << "Створено куртку\n";
+        }
+        else {
+            std::cout << "Такий тип одягу не підтримується\n";
+        }
     }
-};
-class Bow : public Weapon {
-public:
-    std::string Operation() const override {
-        return "{Result of the ConcreteBow}";
-    }
-};
-class Dagger : public Weapon {
-public:
-    std::string Operation() const override {
-        return "{Result of the ConcreteDagger}";
-    }
-};
 
-
-class FabricWeapon {
-    /**
-     * Обратите внимание, что Создатель может также обеспечить реализацию
-     * фабричного метода по умолчанию.
-     */
-public:
-    virtual ~FabricWeapon() {};
-    virtual Weapon* FactoryMethod() const = 0;
-
-    std::string SomeOperation() const {
-        // Вызываем фабричный метод, чтобы получить объект-продукт.
-        Weapon* weapon = this->FactoryMethod();
-        // Далее, работаем с этим продуктом.
-        std::string result = "Creator: The same creator's code has just worked with " + weapon->Operation();
-        delete weapon;
-        return result;
+    void createElectronics(std::string type) override {
+        std::cout << "Фабрика одягу не може створити електроніку\n";
     }
 };
 
-
-class ConcreteSword : public FabricWeapon {
+class ElectronicsFactory : public ProductFactory {
 public:
-    Weapon* FactoryMethod() const override {
-        return new Sword();
+    void createClothing(std::string type) override {
+        std::cout << "Фабрика електроніки не може створити одяг\n";
+    }
+
+    void createElectronics(std::string type) override {
+        if (type == "смартфон") {
+            std::cout << "Створено смартфон\n";
+        }
+        else if (type == "ноутбук") {
+            std::cout << "Створено ноутбук\n";
+        }
+        else if (type == "телевізор") {
+            std::cout << "Створено телевізор\n";
+        }
+        else {
+            std::cout << "Такий тип електроніки не підтримується\n";
+        }
     }
 };
 
-class ConcreteBow : public FabricWeapon {
-public:
-    Weapon* FactoryMethod() const override {
-        return new Bow();
-    }
-};
+class Tshirt {};
+class Pants {};
+class Jacket {};
 
-void ClientCode(const FabricWeapon& creator) {
-    std::cout << "Client: I'm not aware of the creator's class, but it still works.\n"
-        << creator.SomeOperation() << std::endl;
-}
-
+class Smartphone {};
+class Laptop {};
+class Television {};
 
 int main() {
-    std::cout << "App: Launched with the Sword.\n";
-    FabricWeapon* sword = new ConcreteSword();
-    ClientCode(*sword);
-    std::cout << std::endl;
-    std::cout << "App: Launched with the Bow.\n";
-    FabricWeapon* bow = new ConcreteBow();
-    ClientCode(*bow);
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
 
-    delete sword;
-    delete bow;
+    ProductFactory* clothingFactory = new ClothingFactory();
+    ProductFactory* electronicsFactory = new ElectronicsFactory();
+
+    clothingFactory->createClothing("футболка");
+    clothingFactory->createClothing("штани");
+    clothingFactory->createClothing("куртка");
+
+    electronicsFactory->createElectronics("смартфон");
+    electronicsFactory->createElectronics("ноутбук");
+    electronicsFactory->createElectronics("телевізор");
+
+    delete clothingFactory;
+    delete electronicsFactory;
+
     return 0;
 }
